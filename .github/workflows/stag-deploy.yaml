@@ -34,9 +34,13 @@ jobs:
   # TODO: Need to wait apply finish? But does github actions could know that?
   # Why Region need to wait Global? Is the result of plan will be impacted?
 
-  plan_stag_us_common:
+  plan_stag_region_common:
+    strategy:
+      matrix:
+        region: [us-east-1, eu-central-1]
+
     needs: apply_stag_global_common
-    name: Plan Stag us-east-1 Common
+    name: Plan Stag ${{ matrix.region }} Common
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -46,7 +50,7 @@ jobs:
       - name: Create Branch
         uses: ./.github/actions/create-branch
         with:
-          branch-name: "deploy/stag/us-east-1/common/all/plan"
+          branch-name: "deploy/stag/${{ matrix.region }}/common/all/plan"
 
   apply_stag_us_common:
     needs: plan_stag_us_common
@@ -62,20 +66,6 @@ jobs:
         uses: ./.github/actions/create-branch
         with:
           branch-name: "deploy/stag/us-east-1/common/all/apply"
-
-  plan_stag_eu_common:
-    needs: apply_stag_global_common
-    name: Plan Stag eu-central-1 Common
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.head_ref }}
-      - name: Create Branch
-        uses: ./.github/actions/create-branch
-        with:
-          branch-name: "deploy/stag/eu-central/common/all/plan"
 
   apply_stag_eu_common:
     needs: plan_stag_eu_common
