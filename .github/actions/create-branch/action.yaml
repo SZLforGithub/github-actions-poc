@@ -10,7 +10,7 @@ runs:
   steps:
     - name: Create Branch
       run: |
-        git push origin --delete ${{ inputs.branch-name }}
+        git push origin --delete ${{ inputs.branch-name }} || true
         git branch ${{ inputs.branch-name }}
         git push origin ${{ inputs.branch-name }}
       shell: bash
