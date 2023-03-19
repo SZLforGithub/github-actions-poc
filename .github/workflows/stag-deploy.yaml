@@ -38,7 +38,6 @@ jobs:
     strategy:
       matrix:
         region: [us-east-1, eu-central-1]
-
     needs: apply_stag_global_common
     name: Plan Stag ${{ matrix.region }} Common
     runs-on: ubuntu-latest
@@ -52,11 +51,18 @@ jobs:
         with:
           branch-name: "deploy/stag/${{ matrix.region }}/common/all/plan"
 
-  apply_stag_us_common:
+  apply_stag_region_common:
+    strategy:
+      matrix:
+        include:
+          - region: "us-east-1"
+            region_short: "us"
+          - region: "eu-central-1"
+            region_short: "eu"
     needs: plan_stag_region_common
-    name: Apply Stag us-east-1 Common
+    name: Apply Stag ${{ matrix.region }} Common
     runs-on: ubuntu-latest
-    environment: 'approve_apply_stag_us_common'
+    environment: "approve_apply_stag_${{ matrix.region_short }}_common"
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -65,19 +71,4 @@ jobs:
       - name: Create Branch
         uses: ./.github/actions/create-branch
         with:
-          branch-name: "deploy/stag/us-east-1/common/all/apply"
-
-  apply_stag_eu_common:
-    needs: plan_stag_region_common
-    name: Apply Stag eu-central-1 Common
-    runs-on: ubuntu-latest
-    environment: 'approve_apply_stag_eu_common'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.head_ref }}
-      - name: Create Branch
-        uses: ./.github/actions/create-branch
-        with:
-          branch-name: "deploy/stag/eu-central/common/all/apply"
+          branch-name: "deploy/stag/${{ matrix.region }}/common/all/apply"
