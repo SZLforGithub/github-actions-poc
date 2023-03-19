@@ -11,6 +11,7 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
       - name: Create new branch
+        if: always()
         uses: ./.github/actions/create-branch
         with:
           branch-name: "deploy/stag/global/common/all/plan"

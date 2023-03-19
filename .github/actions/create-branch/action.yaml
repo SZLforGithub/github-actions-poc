@@ -9,7 +9,6 @@ runs:
   using: "composite"
   steps:
     - name: Create Branch
-      if: always()
       run: |
         git push origin --delete ${{ inputs.branch-name }}
         git branch ${{ inputs.branch-name }}
