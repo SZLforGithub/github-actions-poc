@@ -3,14 +3,88 @@ name: Stag Deploy Flow
 on: workflow_dispatch
 
 jobs:
-  create-branch:
+  plan-stag-global-common:
+    name: Plan Stag Global Common
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}
-      - name: Create new branch
+      - name: Create Branch
         uses: ./.github/actions/create-branch
         with:
           branch-name: "deploy/stag/global/common/all/plan"
+
+  apply-stag-global-common:
+    needs: plan-stag-global-common
+    name: Apply Stag Global Common
+    runs-on: ubuntu-latest
+    environment: 'need-approve'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Create Branch
+        uses: ./.github/actions/create-branch
+        with:
+          branch-name: "deploy/stag/global/common/all/apply"
+
+  plan-stag-us-common:
+    needs: apply-stag-global-common
+    name: Plan Stag us-east-1 Common
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Create Branch
+        uses: ./.github/actions/create-branch
+        with:
+          branch-name: "deploy/stag/us-east-1/common/all/plan"
+
+  apply-stag-us-common:
+    needs: plan-stag-us-common
+    name: Apply Stag us-east-1 Common
+    runs-on: ubuntu-latest
+    environment: 'need-approve'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Create Branch
+        uses: ./.github/actions/create-branch
+        with:
+          branch-name: "deploy/stag/us-east-1/common/all/apply"
+
+  plan-stag-eu-common:
+    needs: apply-stag-global-common
+    name: Plan Stag eu-central-1 Common
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Create Branch
+        uses: ./.github/actions/create-branch
+        with:
+          branch-name: "deploy/stag/eu-central/common/all/plan"
+
+  apply-stag-eu-common:
+    needs: plan-stag-eu-common
+    name: Apply Stag eu-central-1 Common
+    runs-on: ubuntu-latest
+    environment: 'need-approve'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Create Branch
+        uses: ./.github/actions/create-branch
+        with:
+          branch-name: "deploy/stag/eu-central/common/all/apply"
