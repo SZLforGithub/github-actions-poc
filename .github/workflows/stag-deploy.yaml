@@ -5,13 +5,13 @@ on: workflow_dispatch
 jobs:
   create-branch:
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}
       - name: Create new branch
-        if: ${{ always() }}
         uses: ./.github/actions/create-branch
         with:
           branch-name: "deploy/stag/global/common/all/plan"
