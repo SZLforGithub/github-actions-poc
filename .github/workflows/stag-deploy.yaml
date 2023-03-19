@@ -1,0 +1,16 @@
+name: Stag Deploy Flow
+
+on: workflow_dispatch
+
+jobs:
+  create-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Create new branch
+        uses: ./.github/actions/create-branch
+        with:
+          who-to-greet: "Louis"
