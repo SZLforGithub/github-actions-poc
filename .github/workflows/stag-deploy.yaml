@@ -53,7 +53,7 @@ jobs:
           branch-name: "deploy/stag/${{ matrix.region }}/common/all/plan"
 
   apply_stag_us_common:
-    needs: plan_stag_us_common
+    needs: plan_stag_region_common
     name: Apply Stag us-east-1 Common
     runs-on: ubuntu-latest
     environment: 'approve_apply_stag_us_common'
@@ -68,7 +68,7 @@ jobs:
           branch-name: "deploy/stag/us-east-1/common/all/apply"
 
   apply_stag_eu_common:
-    needs: plan_stag_eu_common
+    needs: plan_stag_region_common
     name: Apply Stag eu-central-1 Common
     runs-on: ubuntu-latest
     environment: 'approve_apply_stag_eu_common'
