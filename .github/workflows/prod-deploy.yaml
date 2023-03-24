@@ -1,0 +1,88 @@
+name: Prod Deploy Flow
+
+# on: workflow_dispatch
+
+on:
+  push:
+    branches: 
+      - feat/prod-deploy-flow
+
+
+jobs:
+  plan_prod_global_common:
+    name: Plan Prod Global Common
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Create Branch
+        uses: ./.github/actions/create-branch
+        with:
+          branch-name: "deploy/prod/global/common/all/plan"
+
+  apply_prod_global_common:
+    needs: plan_prod_global_common
+    name: Apply Prod Global Common
+    runs-on: ubuntu-latest
+    environment: 'approve_apply_prod_global_common'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Create Branch
+        uses: ./.github/actions/create-branch
+        with:
+          branch-name: "deploy/prod/global/common/all/apply"
+
+  # TODO: Need to wait apply finish? But does github actions could know that?
+  # Why Region need to wait Global? Is the result of plan will be impacted?
+
+  plan_prod_region_common:
+    strategy:
+      matrix:
+        region: [us-east-1, eu-central-1, ap-northeast-1, ap-southeast-1, ap-southeast-2, ap-south-1]
+    needs: apply_prod_global_common
+    name: Plan Prod ${{ matrix.region }} Common
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Create Branch
+        uses: ./.github/actions/create-branch
+        with:
+          branch-name: "deploy/prod/${{ matrix.region }}/common/all/plan"
+
+  apply_prod_region_common:
+    strategy:
+      matrix:
+        include:
+          - region: "us-east-1"
+            region_short: "us"
+          - region: "eu-central-1"
+            region_short: "eu"
+          - region: "ap-northeast-1"
+            region_short: "ap2"
+          - region: "ap-southeast-1"
+            region_short: "ap3"
+          - region: "ap-southeast-2"
+            region_short: "ap4"
+          - region: "ap-south-1"
+            region_short: "ap5"
+    needs: plan_prod_region_common
+    name: Apply Prod ${{ matrix.region }} Common
+    runs-on: ubuntu-latest
+    environment: "approve_apply_prod_${{ matrix.region_short }}_common"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Create Branch
+        uses: ./.github/actions/create-branch
+        with:
+          branch-name: "deploy/prod/${{ matrix.region }}/common/all/apply"
